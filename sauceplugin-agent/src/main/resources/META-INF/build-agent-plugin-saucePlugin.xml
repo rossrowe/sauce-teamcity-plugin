@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-autowire="constructor">
+    <bean id="browserFactory" class="com.saucelabs.ci.BrowserFactory" dependency-check="default" autowire="default" lazy-init="true"/>
+    <bean id="sauceTunnelManager" class="com.saucelabs.ci.sauceconnect.SauceConnectTwoManager" dependency-check="default" autowire="default" lazy-init="true"/>
+    <bean id="sauceLifeCycleAdapter" class="com.saucelabs.teamcity.SauceLifeCycleAdapter" lazy-init="default" autowire="default"
+              dependency-check="default"/>
+</beans>

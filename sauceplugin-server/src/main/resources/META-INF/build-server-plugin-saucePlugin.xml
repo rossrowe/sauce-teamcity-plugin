@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans default-autowire="constructor">
+    <!--<bean id="sauceLogListener" class="com.saucelabs.teamcity.listener.SauceBuildListener" init-method="register"/>-->
+
+    <bean id="sauceSystemSettings" class="com.saucelabs.teamcity.settings.SauceSystemSettings"/>
+
+    <bean id="sauceServerListener" class="com.saucelabs.teamcity.listener.SauceServerAdapter" init-method="register"/>
+
+    <bean id="sauceBuildResultsTab" class="com.saucelabs.teamcity.results.SauceBuildResultsTab"/>
+
+</beans>

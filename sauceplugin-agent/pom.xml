@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>sauceplugin</artifactId>
+        <groupId>com.saucelabs.teamcity</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>sauceplugin-agent</artifactId>
+    <packaging>jar</packaging>
+    <dependencies>
+
+        <dependency>
+            <groupId>com.saucelabs.teamcity</groupId>
+            <artifactId>sauceplugin-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains.teamcity</groupId>
+            <artifactId>agent-api</artifactId>
+            <version>${teamcity-version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains.teamcity</groupId>
+            <artifactId>tests-support</artifactId>
+            <version>${teamcity-version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.saucelabs</groupId>
+            <artifactId>saucerest</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+        <dependency>
+            <artifactId>sauce-connect</artifactId>
+            <groupId>com.saucelabs</groupId>
+            <version>3.0.28</version>
+        </dependency>
+        <dependency>
+            <groupId>com.saucelabs</groupId>
+            <artifactId>ci-sauce</artifactId>
+            <version>1.33</version>
+            <scope>compile</scope>
+            <exclusions>
+                <!--<exclusion>-->
+                <!--<artifactId>sauce-connect</artifactId>-->
+                <!--<groupId>com.saucelabs</groupId>-->
+                <!--</exclusion>-->
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-remote-driver</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.saucelabs</groupId>
+                    <artifactId>sebuilder-interpreter</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+    </dependencies>
+</project>
