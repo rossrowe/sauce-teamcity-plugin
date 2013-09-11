@@ -18,6 +18,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
+ * Server-side adapter which invokes post-build logic.
+ *
  * @author Ross Rowe
  */
 public class SauceServerAdapter extends BuildServerAdapter {
@@ -35,6 +37,11 @@ public class SauceServerAdapter extends BuildServerAdapter {
         myBuildServer.addListener(this);
     }
 
+    /**
+     * Invoked when a build is finished.  Iterates over the build output and identifies lines which contains 'SauceOnDemandSessionID',
+     * and for each line, invokes the Sauce REST API to associate the TeamCity build number with the Sauce Job.
+     * @param build
+     */
     @Override
     public void buildFinished(SRunningBuild build) {
         super.buildFinished(build);
@@ -52,12 +59,18 @@ public class SauceServerAdapter extends BuildServerAdapter {
                 }
                 if (sessionId != null && !sessionId.equalsIgnoreCase("null")) {
                     storeBuildNumberInSauce(build, sessionId);
-                    build.getTags().add(sessionId);
+                    //build.getTags().add(sessionId);
                 }
             }
         }
     }
 
+    /**
+     * Invokes the Sauce REST API to store the TeamCity build number and pass/fail status within
+     * Sauce.
+     * @param build
+     * @param sessionId
+     */
     private void storeBuildNumberInSauce(SRunningBuild build, String sessionId) {
         Collection<SBuildFeatureDescriptor> features = build.getBuildType().getBuildFeatures();
         if (features.isEmpty()) return;
@@ -93,9 +106,4 @@ public class SauceServerAdapter extends BuildServerAdapter {
         return feature.getParameters().get(Constants.SAUCE_USER_ID_KEY);
     }
 
-    @Override
-    public void buildStarted(SRunningBuild build) {
-        super.buildStarted(build);
-
-    }
 }

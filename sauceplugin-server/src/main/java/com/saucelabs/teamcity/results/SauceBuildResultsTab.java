@@ -27,6 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
+ * Adds a Sauce-specific tab to the build results page.
+ *
  * @author Ross Rowe
  */
 public class SauceBuildResultsTab extends BuildTab {
@@ -39,30 +41,45 @@ public class SauceBuildResultsTab extends BuildTab {
 
     private static final String HMAC_KEY = "HMACMD5";
 
-    private PluginDescriptor myPluginDescriptor;
-
     protected SauceBuildResultsTab(WebControllerManager manager, BuildsManager buildManager, PluginDescriptor myPluginDescriptor) {
         super("sauceBuildResults", "Sauce Labs Results", manager, buildManager, myPluginDescriptor.getPluginResourcesPath("sauceBuildResults.jsp"));
-        this.myPluginDescriptor = myPluginDescriptor;
     }
 
+    /**
+     * Returns the model to be used when rendering the sauce results jsp.
+     *
+     * @param model
+     * @param build
+     */
     @Override
     protected void fillModel(@NotNull Map<String, Object> model, @NotNull SBuild build) {
+        //TODO can we store the Sauce session id on the build instance?
         //invoke Sauce REST API to retrieve job ids for TC build
+        List<JobInformation> jobs = new ArrayList<JobInformation>();
         try {
-            List<JobInformation> jobs = retrieveJobIdsFromSauce(build);
-            model.put("jobs", jobs);
+            jobs = retrieveJobIdsFromSauce(build);
         } catch (IOException e) {
             logger.error("Error retrieving job information", e);
         } catch (JSONException e) {
             logger.error("Error retrieving job information", e);
+
         } catch (InvalidKeyException e) {
             logger.error("Error retrieving job information", e);
         } catch (NoSuchAlgorithmException e) {
             logger.error("Error retrieving job information", e);
         }
+        model.put("jobs", jobs);
     }
 
+    /**
+     * Retrieve the list of Sauce jobs recorded against the TeamCity build.
+     * @param build
+     * @return
+     * @throws IOException
+     * @throws JSONException
+     * @throws InvalidKeyException
+     * @throws NoSuchAlgorithmException
+     */
     public List<JobInformation> retrieveJobIdsFromSauce(SBuild build) throws IOException, JSONException, InvalidKeyException, NoSuchAlgorithmException {
         //invoke Sauce Rest API to find plan results with those values
         List<JobInformation> jobInformation = new ArrayList<JobInformation>();
@@ -97,6 +114,11 @@ public class SauceBuildResultsTab extends BuildTab {
         return jobInformation;
     }
 
+    /**
+     * Returns the Sauce-specific {@link SBuildFeatureDescriptor} instance.
+     * @param build
+     * @return
+     */
     private SBuildFeatureDescriptor getSauceBuildFeature(SBuild build) {
         Collection<SBuildFeatureDescriptor> features = build.getBuildType().getBuildFeatures();
         if (features.isEmpty()) return null;
@@ -109,12 +131,27 @@ public class SauceBuildResultsTab extends BuildTab {
         return null;
     }
 
+    /**
+     *
+     * @param build
+     * @return true if sauce is configured
+     */
     @Override
     protected boolean isAvailableFor(@NotNull SBuild build) {
-        //return true if sauce is configured
         return getSauceBuildFeature(build) != null && super.isAvailableFor(build); //should return true
     }
 
+    /**
+     * Returns the HMAC to be used for authentication of the embedded Sauce job report.
+     *
+     * @param username
+     * @param accessKey
+     * @param jobId
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws UnsupportedEncodingException
+     */
     public String calcHMAC(String username, String accessKey, String jobId) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
         Calendar calendar = Calendar.getInstance();
 

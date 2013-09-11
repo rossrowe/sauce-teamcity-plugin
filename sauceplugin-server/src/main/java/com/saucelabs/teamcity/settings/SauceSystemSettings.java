@@ -6,6 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
+ * {@link BuildFeature} instance which is used to present the Sauce configuration options on a TeamCity project.
+ *
  * @author Ross Rowe
  */
 public class SauceSystemSettings extends BuildFeature {

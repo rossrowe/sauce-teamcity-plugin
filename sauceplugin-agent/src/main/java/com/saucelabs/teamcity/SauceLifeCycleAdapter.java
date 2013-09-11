@@ -4,10 +4,8 @@ import com.saucelabs.ci.Browser;
 import com.saucelabs.ci.BrowserFactory;
 import com.saucelabs.ci.sauceconnect.SauceConnectTwoManager;
 import jetbrains.buildServer.agent.*;
-import jetbrains.buildServer.agent.duplicates.DuplicatesReporter;
-import jetbrains.buildServer.agent.inspections.InspectionReporter;
-import jetbrains.buildServer.messages.BuildMessage1;
 import jetbrains.buildServer.util.EventDispatcher;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -18,28 +16,19 @@ import java.util.Collection;
  */
 public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
 
-    private final InspectionReporter myInspectionReporter;
-    private final DuplicatesReporter myDuplicatesReporter;
+    private static final Logger logger = Logger.getLogger(SauceLifeCycleAdapter.class);
+
     private AgentRunningBuild myBuild;
     private BrowserFactory sauceBrowserFactory;
     private SauceConnectTwoManager sauceTunnelManager;
 
     public SauceLifeCycleAdapter(
             @NotNull EventDispatcher<AgentLifeCycleListener> agentDispatcher,
-            @NotNull jetbrains.buildServer.agent.inspections.InspectionReporter inspectionReporter,
-            @NotNull DuplicatesReporter duplicatesReporter,
             BrowserFactory sauceBrowserFactory,
             SauceConnectTwoManager sauceTunnelManager) {
         agentDispatcher.addListener(this);
-        this.myInspectionReporter = inspectionReporter;
-        this.myDuplicatesReporter = duplicatesReporter;
         this.sauceBrowserFactory = sauceBrowserFactory;
         this.sauceTunnelManager = sauceTunnelManager;
-    }
-
-    @Override
-    public void beforeRunnerStart(@NotNull BuildRunnerContext runner) {
-        super.beforeRunnerStart(runner);
     }
 
     @Override
@@ -50,7 +39,6 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         for (AgentBuildFeature feature : features) {
             sauceTunnelManager.closeTunnelsForPlan(getUsername(feature), null);
         }
-        //invoke Sauce REST API to store build information
     }
 
     @Override
@@ -78,7 +66,8 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
                     feature.getParameters().get(Constants.SAUCE_HTTPS_PROTOCOL),
                     null);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error launching Sauce Connect", e);
+            //TODO log error to build log
         }
     }
 
@@ -129,15 +118,6 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         return myBuild;
     }
 
-    @Override
-    public void messageLogged(@NotNull BuildMessage1 buildMessage) {
-        super.messageLogged(buildMessage);
-    }
-
-    @Override
-    public void messageLogged(@NotNull AgentRunningBuild build, @NotNull BuildMessage1 buildMessage) {
-        super.messageLogged(build, buildMessage);
-    }
 
     /**
      * Generates a String that represents the Sauce OnDemand driver URL. This is used by the
