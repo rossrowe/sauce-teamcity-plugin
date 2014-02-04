@@ -41,7 +41,6 @@
     <th><label for="saucePlugin.webDriverBrowsers">Browsers:</label></th>
     <td>
         <props:selectProperty name="saucePlugin.webDriverBrowsers" multiple="true">
-            <c:set var="selected" value="false"/>
             <%--<c:if test="${empty reportType}">--%>
                 <%--<c:set var="selected" value="true"/>--%>
             <%--</c:if>--%>

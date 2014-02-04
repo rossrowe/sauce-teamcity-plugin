@@ -140,6 +140,9 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
                 sb.append("&os=").append(browser.getOs());
                 sb.append("&browser=").append(browser.getBrowserName());
                 sb.append("&browser-version=").append(browser.getVersion());
+                addSharedEnvironmentVariable(runningBuild,Constants.SELENIUM_BROWSER_ENV, browser.getBrowserName());
+                addSharedEnvironmentVariable(runningBuild,Constants.SELENIUM_VERSION_ENV, browser.getVersion());
+                addSharedEnvironmentVariable(runningBuild,Constants.SELENIUM_PLATFORM_ENV, browser.getOs());
             }
         }
 
@@ -151,7 +154,8 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         return sb.toString();
     }
 
-    private String[] getSelectedBrowsers(AgentBuildFeature config) {
-        return new String[0];  //To change body of created methods use File | Settings | File Templates.
+    private String[] getSelectedBrowsers(AgentBuildFeature feature) {
+        //Although we present a multi-select list, only a single browser can currently be selected due to http://youtrack.jetbrains.com/issue/TW-32265
+        return new String[]{feature.getParameters().get(Constants.SELENIUM_SELECTED_BROWSER)};
     }
 }
