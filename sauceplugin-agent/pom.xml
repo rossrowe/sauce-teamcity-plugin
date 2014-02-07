@@ -34,23 +34,19 @@
         <dependency>
             <groupId>com.saucelabs</groupId>
             <artifactId>saucerest</artifactId>
-            <version>1.0.4</version>
+            <version>1.0.7</version>
         </dependency>
         <dependency>
             <artifactId>sauce-connect</artifactId>
             <groupId>com.saucelabs</groupId>
-            <version>3.0.28</version>
+            <version>3.0.29</version>
         </dependency>
         <dependency>
             <groupId>com.saucelabs</groupId>
             <artifactId>ci-sauce</artifactId>
-            <version>1.33</version>
+            <version>1.40</version>
             <scope>compile</scope>
             <exclusions>
-                <!--<exclusion>-->
-                <!--<artifactId>sauce-connect</artifactId>-->
-                <!--<groupId>com.saucelabs</groupId>-->
-                <!--</exclusion>-->
                 <exclusion>
                     <groupId>org.seleniumhq.selenium</groupId>
                     <artifactId>selenium-remote-driver</artifactId>
