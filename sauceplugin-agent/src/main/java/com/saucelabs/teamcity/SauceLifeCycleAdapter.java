@@ -7,6 +7,9 @@ import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.util.EventDispatcher;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -88,16 +91,52 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
 
         String userName = getUsername(feature);
         String apiKey = getAccessKey(feature);
-        String sodDriverURI = getSodDriverUri(userName, apiKey, runningBuild, feature);
-        addSharedEnvironmentVariable(runningBuild,Constants.SAUCE_USER_NAME, userName);
-        addSharedEnvironmentVariable(runningBuild,Constants.SAUCE_API_KEY, apiKey);
-        addSharedEnvironmentVariable(runningBuild,Constants.SELENIUM_DRIVER_ENV, sodDriverURI);
-        addSharedEnvironmentVariable(runningBuild,Constants.SELENIUM_HOST_ENV, feature.getParameters().get(Constants.SELENIUM_HOST_KEY));
-        addSharedEnvironmentVariable(runningBuild,Constants.SELENIUM_PORT_ENV, feature.getParameters().get(Constants.SELENIUM_PORT_KEY));
-        addSharedEnvironmentVariable(runningBuild,Constants.SELENIUM_STARTING_URL_ENV, feature.getParameters().get(Constants.SELENIUM_STARTING_URL_KEY));
-        addSharedEnvironmentVariable(runningBuild,Constants.SELENIUM_MAX_DURATION_ENV, feature.getParameters().get(Constants.SELENIUM_MAX_DURATION_KEY));
-        addSharedEnvironmentVariable(runningBuild,Constants.SELENIUM_IDLE_TIMEOUT_ENV, feature.getParameters().get(Constants.SELENIUM_IDLE_TIMEOUT_KEY));
 
+        String[] selectedBrowsers = getSelectedBrowsers(feature);
+        if (selectedBrowsers.length == 1) {
+            Browser browser = sauceBrowserFactory.webDriverBrowserForKey(selectedBrowsers[0]);
+            if (browser != null) {
+                String sodDriverURI = getSodDriverUri(userName, apiKey, browser, feature);
+                addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_BROWSER_ENV, browser.getBrowserName());
+                addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_VERSION_ENV, browser.getVersion());
+                addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_PLATFORM_ENV, browser.getOs());
+                addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_DRIVER_ENV, sodDriverURI);
+            }
+        } else {
+            JSONArray browsersJSON = new JSONArray();
+            for (String browser : selectedBrowsers) {
+                Browser browserInstance = BrowserFactory.getInstance().webDriverBrowserForKey(browser);
+                if (browserInstance != null) {
+                    browserAsJSON(userName, apiKey, browsersJSON, browserInstance);
+                }
+            }
+            addSharedEnvironmentVariable(runningBuild, Constants.SAUCE_BROWSERS_ENV, browsersJSON.toString());
+        }
+        addSharedEnvironmentVariable(runningBuild, Constants.SAUCE_USER_NAME, userName);
+        addSharedEnvironmentVariable(runningBuild, Constants.SAUCE_API_KEY, apiKey);
+        addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_HOST_ENV, feature.getParameters().get(Constants.SELENIUM_HOST_KEY));
+        addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_PORT_ENV, feature.getParameters().get(Constants.SELENIUM_PORT_KEY));
+        addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_STARTING_URL_ENV, feature.getParameters().get(Constants.SELENIUM_STARTING_URL_KEY));
+        addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_MAX_DURATION_ENV, feature.getParameters().get(Constants.SELENIUM_MAX_DURATION_KEY));
+        addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_IDLE_TIMEOUT_ENV, feature.getParameters().get(Constants.SELENIUM_IDLE_TIMEOUT_KEY));
+
+    }
+
+    private void browserAsJSON(String userName, String apiKey, JSONArray browsersJSON, Browser browserInstance) {
+        if (browserInstance == null) {
+            return;
+        }
+        JSONObject config = new JSONObject();
+        try {
+            config.put("os", browserInstance.getOs());
+            config.put("platform", browserInstance.getPlatform().toString());
+            config.put("browser", browserInstance.getBrowserName());
+            config.put("browser-version", browserInstance.getVersion());
+            config.put("url", browserInstance.getUri(userName, apiKey));
+        } catch (JSONException e) {
+            logger.error("Unable to create JSON Object", e);
+        }
+        browsersJSON.put(config);
     }
 
     private void addSharedEnvironmentVariable(AgentRunningBuild runningBuild, String key, String value) {
@@ -125,26 +164,21 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
      *
      * @param username
      * @param apiKey
-     * @param runningBuild
-     * @param feature      @return String representing the Sauce OnDemand driver URI
+     * @param feature  @return String representing the Sauce OnDemand driver URI
      */
-    protected String getSodDriverUri(String username, String apiKey, AgentRunningBuild runningBuild, AgentBuildFeature feature) {
+    protected String getSodDriverUri(String username, String apiKey, Browser browser, AgentBuildFeature feature) {
         StringBuilder sb = new StringBuilder("sauce-ondemand:?username=");
         sb.append(username);
         sb.append("&access-key=").append(apiKey);
 
-        String[] selectedBrowsers = getSelectedBrowsers(feature);
-        if (selectedBrowsers.length == 1) {
-            Browser browser = sauceBrowserFactory.webDriverBrowserForKey(feature.getParameters().get(Constants.SELENIUM_SELECTED_BROWSER));
-            if (browser != null) {
-                sb.append("&os=").append(browser.getOs());
-                sb.append("&browser=").append(browser.getBrowserName());
-                sb.append("&browser-version=").append(browser.getVersion());
-                addSharedEnvironmentVariable(runningBuild,Constants.SELENIUM_BROWSER_ENV, browser.getBrowserName());
-                addSharedEnvironmentVariable(runningBuild,Constants.SELENIUM_VERSION_ENV, browser.getVersion());
-                addSharedEnvironmentVariable(runningBuild,Constants.SELENIUM_PLATFORM_ENV, browser.getOs());
-            }
+
+        if (browser != null) {
+            sb.append("&os=").append(browser.getOs());
+            sb.append("&browser=").append(browser.getBrowserName());
+            sb.append("&browser-version=").append(browser.getVersion());
+
         }
+
 
 //        sb.append("&firefox-profile-url=").append(StringUtils.defaultString(feature.getFirefoxProfileUrl()));
         sb.append("&max-duration=").append(feature.getParameters().get(Constants.SELENIUM_MAX_DURATION_KEY));
@@ -155,7 +189,6 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
     }
 
     private String[] getSelectedBrowsers(AgentBuildFeature feature) {
-        //Although we present a multi-select list, only a single browser can currently be selected due to http://youtrack.jetbrains.com/issue/TW-32265
-        return new String[]{feature.getParameters().get(Constants.SELENIUM_SELECTED_BROWSER)};
+        return feature.getParameters().get(Constants.SELENIUM_SELECTED_BROWSER).split(",");
     }
 }

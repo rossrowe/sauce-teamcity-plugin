@@ -17,7 +17,7 @@ public class Constants {
     public static final String BAMBOO_BUILD_NUMBER_ENV = "BAMBOO_BUILDNUMBER";
     public static final String SAUCE_USER_NAME = "SAUCE_USER_NAME";
     public static final String SAUCE_API_KEY = "SAUCE_API_KEY";
-    public static final String SAUCE_BROWSERS = "SAUCE_ONDEMAND_BROWSERS";
+    public static final String SAUCE_BROWSERS_ENV = "SAUCE_ONDEMAND_BROWSERS";
     public static final String SELENIUM_MAX_DURATION_ENV = "SELENIUM_MAX_DURATION";
     public static final String SELENIUM_IDLE_TIMEOUT_ENV = "SELENIUM_IDLE_TIMEOUT";
     public static final String SAUCE_USER_ID_KEY = "saucePlugin.userId";
@@ -27,7 +27,7 @@ public class Constants {
     public static final String SELENIUM_STARTING_URL_KEY = "saucePlugin.startingURL";
     public static final String SELENIUM_MAX_DURATION_KEY = "saucePlugin.maxDuration";
     public static final String SELENIUM_IDLE_TIMEOUT_KEY = "saucePlugin.idleTimeout";
-    public static final String SELENIUM_SELECTED_BROWSER = "saucePlugin.webDriverBrowsers";
+    public static final String SELENIUM_SELECTED_BROWSER = "saucePlugin.selectedBrowsers";
     public static final String SAUCE_CONNECT_OPTIONS = "saucePlugin.sauceConnectOptions";
     public static final String SAUCE_HTTPS_PROTOCOL = "saucePlugin.httpsProtocol";
     public static final String SAUCE_CONNECT_KEY = "saucePlugin.sauceConnect";

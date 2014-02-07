@@ -7,7 +7,7 @@
 <jsp:useBean id="sauceBrowsersBean" scope="request" class="com.saucelabs.ci.BrowserFactory"/>
 
 <c:set var="selectedBrowsers"
-       value="${propertiesBean.properties['saucePlugin.webDriverBrowsers']}"/>
+       value="${propertiesBean.properties['saucePlugin.selectedBrowsers']}"/>
 
 <c:set var="sauceEnabled"
        value="${propertiesBean.properties['saucePlugin.sauceEnabled']}"/>
@@ -18,7 +18,8 @@
 <tr id="saucePlugin.sauceConnect.container">
     <th><label for="saucePlugin.sauceConnect">Start Sauce Connect:</label></th>
     <td>
-        <props:checkboxProperty name="saucePlugin.sauceConnect" treatFalseValuesCorrectly="${true}" uncheckedValue="false"/>
+        <props:checkboxProperty name="saucePlugin.sauceConnect" treatFalseValuesCorrectly="${true}"
+                                uncheckedValue="false"/>
     </td>
 </tr>
 
@@ -37,17 +38,25 @@
 </tr>
 
 
+
 <tr id="saucePlugin.webDriverBrowsers.container">
     <th><label for="saucePlugin.webDriverBrowsers">Browsers:</label></th>
     <td>
-        <props:selectProperty name="saucePlugin.webDriverBrowsers" multiple="true">
-            <%--<c:if test="${empty reportType}">--%>
-                <%--<c:set var="selected" value="true"/>--%>
-            <%--</c:if>--%>
-            <%--<props:option value="" selected="${selected}">&lt;Do not process&gt;</props:option>--%>
+        <props:hiddenProperty name="saucePlugin.selectedBrowsers" value=""/>
+        <props:selectProperty name="saucePlugin.webDriverBrowsers" multiple="true"
+                              onclick="
+                              var selectedBrowsers = '';
+                                  for (x = 0; x < document.getElementById('saucePlugin.webDriverBrowsers').length; x++) {
+                                      if (document.getElementById('saucePlugin.webDriverBrowsers')[x].selected) {
+
+                                          selectedBrowsers = document.getElementById('saucePlugin.webDriverBrowsers')[x].value + ',' + selectedBrowsers;
+                                      }
+                                  }
+                                  document.getElementById('saucePlugin.selectedBrowsers').value = selectedBrowsers;">
+
             <c:forEach var="browser" items="${sauceBrowsersBean.webDriverBrowsers}">
                 <c:set var="selected" value="false"/>
-                <c:if test="${selectedBrowsers == browser.key}">
+                <c:if test="${selectedBrowsers.contains(browser.key)}">
                     <c:set var="selected" value="true"/>
                 </c:if>
                 <props:option value="${browser.key}"
@@ -56,3 +65,4 @@
         </props:selectProperty>
     </td>
 </tr>
+
