@@ -13,7 +13,18 @@
             <id>JetBrains</id>
             <url>http://repository.jetbrains.com/all</url>
         </repository>
+        <repository>
+            <id>Sauce Maven Repository</id>
+            <url>https://repository-saucelabs.forge.cloudbees.com/release</url>
+        </repository>
     </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>com.saucelabs</groupId>
+            <artifactId>ci-sauce</artifactId>
+            <version>1.40</version>
+        </dependency>
+    </dependencies>
     <scm>
         <connection>scm:git:git://github.com/rossrowe/sauce-teamcity-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:rossrowe/sauce-teamcity-plugin.git</developerConnection>
