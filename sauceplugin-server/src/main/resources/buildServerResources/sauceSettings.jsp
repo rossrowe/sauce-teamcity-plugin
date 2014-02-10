@@ -43,7 +43,7 @@
     <th><label for="saucePlugin.webDriverBrowsers">Browsers:</label></th>
     <td>
         <props:hiddenProperty name="saucePlugin.selectedBrowsers" value=""/>
-        <props:selectProperty name="saucePlugin.webDriverBrowsers" multiple="true"
+        <props:selectProperty name="saucePlugin.webDriverBrowsers" multiple="true" rows="10"
                               onclick="
                               var selectedBrowsers = '';
                                   for (x = 0; x < document.getElementById('saucePlugin.webDriverBrowsers').length; x++) {

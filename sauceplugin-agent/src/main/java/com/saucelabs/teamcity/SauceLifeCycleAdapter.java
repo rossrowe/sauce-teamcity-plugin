@@ -114,6 +114,10 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         }
         addSharedEnvironmentVariable(runningBuild, Constants.SAUCE_USER_NAME, userName);
         addSharedEnvironmentVariable(runningBuild, Constants.SAUCE_API_KEY, apiKey);
+        //backwards compatibility with environment variables expected by Sausage
+        addSharedEnvironmentVariable(runningBuild, Constants.SAUCE_USERNAME, userName);
+        addSharedEnvironmentVariable(runningBuild, Constants.SAUCE_ACCESS_KEY, apiKey);
+
         addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_HOST_ENV, feature.getParameters().get(Constants.SELENIUM_HOST_KEY));
         addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_PORT_ENV, feature.getParameters().get(Constants.SELENIUM_PORT_KEY));
         addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_STARTING_URL_ENV, feature.getParameters().get(Constants.SELENIUM_STARTING_URL_KEY));
