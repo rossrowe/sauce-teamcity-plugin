@@ -73,6 +73,7 @@ public class SauceBuildResultsTab extends BuildTab {
 
     /**
      * Retrieve the list of Sauce jobs recorded against the TeamCity build.
+     *
      * @param build
      * @return
      * @throws IOException
@@ -92,6 +93,7 @@ public class SauceBuildResultsTab extends BuildTab {
         String accessKey = sauceBuildFeature.getParameters().get(Constants.SAUCE_PLUGIN_ACCESS_KEY);
         String buildNumber = build.getBuildTypeExternalId() + build.getBuildNumber();
         SauceREST sauceREST = new SauceREST(username, accessKey);
+        logger.info("Retrieving Sauce jobs for " + buildNumber + " user: " + username);
         String jsonResponse = sauceREST.retrieveResults(new URL(String.format(JOB_DETAILS_URL, username, buildNumber)));
         JSONObject job = new JSONObject(jsonResponse);
         JSONArray jobResults = job.getJSONArray("jobs");
@@ -116,6 +118,7 @@ public class SauceBuildResultsTab extends BuildTab {
 
     /**
      * Returns the Sauce-specific {@link SBuildFeatureDescriptor} instance.
+     *
      * @param build
      * @return
      */
@@ -132,7 +135,6 @@ public class SauceBuildResultsTab extends BuildTab {
     }
 
     /**
-     *
      * @param build
      * @return true if sauce is configured
      */

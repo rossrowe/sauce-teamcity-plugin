@@ -81,7 +81,9 @@ public class SauceServerAdapter extends BuildServerAdapter {
                 try {
                     String json = sauceREST.getJobInfo(sessionId);
                     JSONObject jsonObject = (JSONObject) new JSONParser().parse(json);
-                    updates.put("build", build.getBuildTypeExternalId() + build.getBuildNumber());
+                    String buildNumber = build.getBuildTypeExternalId() + build.getBuildNumber();
+                    logger.info("Setting build number " + buildNumber + " for job " + sessionId + " user: " + getUsername(feature));
+                    updates.put("build", buildNumber);
                     if (jsonObject.get("passed") == null || jsonObject.get("passed").equals("")) {
                         if (build.getStatusDescriptor().getStatus().isSuccessful()) {
                             updates.put("passed", Boolean.TRUE.toString());
