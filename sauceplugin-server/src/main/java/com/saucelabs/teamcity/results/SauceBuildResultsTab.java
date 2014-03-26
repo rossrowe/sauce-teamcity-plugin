@@ -97,6 +97,13 @@ public class SauceBuildResultsTab extends BuildTab {
         String jsonResponse = sauceREST.retrieveResults(new URL(String.format(JOB_DETAILS_URL, username, buildNumber)));
         JSONObject job = new JSONObject(jsonResponse);
         JSONArray jobResults = job.getJSONArray("jobs");
+        if (jobResults.length() == 0) {
+            //try query using the build number
+            logger.info("Retrieving Sauce jobs for " + build.getBuildNumber() + " user: " + username);
+            jsonResponse = sauceREST.retrieveResults(new URL(String.format(JOB_DETAILS_URL, username, build.getBuildNumber())));
+            job = new JSONObject(jsonResponse);
+            jobResults = job.getJSONArray("jobs");
+        }
 
         for (int i = 0; i < jobResults.length(); i++) {
             //check custom data to find job that was for build
