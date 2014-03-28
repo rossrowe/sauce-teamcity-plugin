@@ -94,7 +94,7 @@ public class SauceServerAdapter extends BuildServerAdapter {
 
                     sauceREST.updateJobInfo(sessionId, updates);
                 } catch (org.json.simple.parser.ParseException e) {
-                    logger.error("Failed to parse JSON", e);
+                    logger.error("Failed to parse JSON for session id: " + sessionId + " user: " + getUsername(feature), e);
                 }
             }
         }

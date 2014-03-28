@@ -13,7 +13,7 @@
         <dependency>
             <groupId>com.saucelabs</groupId>
             <artifactId>saucerest</artifactId>
-            <version>1.0.4</version>
+            <version>1.0.13</version>
         </dependency>
         <dependency>
             <groupId>com.saucelabs</groupId>

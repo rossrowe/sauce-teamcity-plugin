@@ -37,9 +37,11 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
     @Override
     public void beforeBuildFinish(@NotNull AgentRunningBuild build, @NotNull BuildFinishedStatus buildStatus) {
         super.beforeBuildFinish(build, buildStatus);
+
         Collection<AgentBuildFeature> features = getBuild().getBuildFeaturesOfType("sauce");
         if (features.isEmpty()) return;
         for (AgentBuildFeature feature : features) {
+            logger.info("Closing Sauce Connect");
             sauceTunnelManager.closeTunnelsForPlan(getUsername(feature), null);
         }
     }
@@ -47,6 +49,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
     @Override
     public void buildStarted(@NotNull AgentRunningBuild runningBuild) {
         super.buildStarted(runningBuild);
+        logger.info("Build Started, setting Sauce environment variables");
         this.myBuild = runningBuild;
         Collection<AgentBuildFeature> features = getBuild().getBuildFeaturesOfType("sauce");
         if (features.isEmpty()) return;
@@ -60,6 +63,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
 
     private void startSauceConnect(AgentBuildFeature feature) {
         try {
+            logger.info("Starting Sauce Connect");
             sauceTunnelManager.openConnection(
                     getUsername(feature),
                     getAccessKey(feature),
@@ -89,6 +93,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
 
     private void populateEnvironmentVariables(AgentRunningBuild runningBuild, AgentBuildFeature feature) {
 
+        logger.info("Populating environment variables");
         String userName = getUsername(feature);
         String apiKey = getAccessKey(feature);
 
@@ -145,6 +150,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
 
     private void addSharedEnvironmentVariable(AgentRunningBuild runningBuild, String key, String value) {
         if (value != null) {
+            logger.info("Setting environment variable: " + key + " value: " + value);
             runningBuild.addSharedEnvironmentVariable(key, value);
         }
     }
