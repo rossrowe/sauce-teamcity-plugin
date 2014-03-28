@@ -199,6 +199,6 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
     }
 
     private String[] getSelectedBrowsers(AgentBuildFeature feature) {
-        return feature.getParameters().get(Constants.SELENIUM_SELECTED_BROWSER).split(",");
+        return feature.getParameters().get(Constants.SELENIUM_WEB_DRIVER_BROWSERS).split(",");
     }
 }
