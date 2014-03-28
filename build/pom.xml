@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.saucelabs.teamcity</groupId>
     <artifactId>sauceplugin</artifactId>
-    <version>1.7-SNAPSHOT</version>
+    <version>1.7</version>
   </parent>
   <artifactId>build</artifactId>
   <packaging>pom</packaging>
@@ -15,17 +15,17 @@
       <dependency>
            <groupId>com.saucelabs.teamcity</groupId>
            <artifactId>sauceplugin-agent</artifactId>
-           <version>1.7-SNAPSHOT</version>
+           <version>1.7</version>
       </dependency>
       <dependency>
            <groupId>com.saucelabs.teamcity</groupId>
            <artifactId>sauceplugin-common</artifactId>
-           <version>1.7-SNAPSHOT</version>
+           <version>1.7</version>
       </dependency>
       <dependency>
            <groupId>com.saucelabs.teamcity</groupId>
            <artifactId>sauceplugin-server</artifactId>
-           <version>1.7-SNAPSHOT</version>
+           <version>1.7</version>
       </dependency>
   </dependencies>
   <build>
