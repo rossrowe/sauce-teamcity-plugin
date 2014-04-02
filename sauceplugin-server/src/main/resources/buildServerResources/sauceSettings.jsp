@@ -37,6 +37,20 @@
     </td>
 </tr>
 
+<tr id="saucePlugin.seleniumHost.container">
+    <th><label for="saucePlugin.seleniumHost">Selenium Host:</label></th>
+    <td>
+        <props:textProperty name="saucePlugin.seleniumHost"/>
+    </td>
+</tr>
+
+<tr id="saucePlugin.seleniumPort.container">
+    <th><label for="saucePlugin.seleniumPort">Selenium Port:</label></th>
+    <td>
+        <props:textProperty name="saucePlugin.seleniumPort"/>
+    </td>
+</tr>
+
 
 
 <tr id="saucePlugin.webDriverBrowsers.container">

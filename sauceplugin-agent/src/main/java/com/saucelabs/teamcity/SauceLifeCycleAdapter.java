@@ -67,7 +67,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
             sauceTunnelManager.openConnection(
                     getUsername(feature),
                     getAccessKey(feature),
-                    getSauceConnectPort(feature),
+                    Integer.parseInt(getSeleniumPort(feature)),
                     null,
                     feature.getParameters().get(Constants.SAUCE_CONNECT_OPTIONS),
                     feature.getParameters().get(Constants.SAUCE_HTTPS_PROTOCOL),
@@ -78,12 +78,30 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         }
     }
 
-    private int getSauceConnectPort(AgentBuildFeature feature) {
-        String port = feature.getParameters().get(Constants.SELENIUM_PORT_KEY);
-        if (port == null) {
-            port = "4445";
+    private String getSeleniumHost(AgentBuildFeature feature) {
+        String host = feature.getParameters().get(Constants.SELENIUM_HOST_KEY);
+        if (host == null || host.equals("")) {
+            if (shouldStartSauceConnect(feature)) {
+                host = "localhost";
+            } else {
+                host = "ondemand.saucelabs.com";
+            }
         }
-        return Integer.parseInt(port);
+        return host;
+    }
+
+    private String getSeleniumPort(AgentBuildFeature feature) {
+        String port = feature.getParameters().get(Constants.SELENIUM_PORT_KEY);
+        if (port == null || port.equals("")) {
+            if (shouldStartSauceConnect(feature)) {
+                port = "4445";
+            } else {
+                port = "80";
+            }
+
+        }
+        return port;
+
     }
 
     private boolean shouldStartSauceConnect(AgentBuildFeature feature) {
@@ -123,8 +141,8 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         addSharedEnvironmentVariable(runningBuild, Constants.SAUCE_USERNAME, userName);
         addSharedEnvironmentVariable(runningBuild, Constants.SAUCE_ACCESS_KEY, apiKey);
 
-        addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_HOST_ENV, feature.getParameters().get(Constants.SELENIUM_HOST_KEY));
-        addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_PORT_ENV, feature.getParameters().get(Constants.SELENIUM_PORT_KEY));
+        addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_HOST_ENV, getSeleniumHost(feature));
+        addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_PORT_ENV, getSeleniumPort(feature));
         addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_STARTING_URL_ENV, feature.getParameters().get(Constants.SELENIUM_STARTING_URL_KEY));
         addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_MAX_DURATION_ENV, feature.getParameters().get(Constants.SELENIUM_MAX_DURATION_KEY));
         addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_IDLE_TIMEOUT_ENV, feature.getParameters().get(Constants.SELENIUM_IDLE_TIMEOUT_KEY));
