@@ -4,7 +4,7 @@
     <parent>
         <artifactId>sauceplugin</artifactId>
         <groupId>com.saucelabs.teamcity</groupId>
-        <version>1.9</version>
+        <version>1.10-SNAPSHOT</version>
     </parent>
     <artifactId>sauceplugin-common</artifactId>
     <packaging>jar</packaging>
