@@ -147,7 +147,16 @@ public class SauceBuildResultsTab extends BuildTab {
      */
     @Override
     protected boolean isAvailableFor(@NotNull SBuild build) {
-        return getSauceBuildFeature(build) != null && super.isAvailableFor(build); //should return true
+        SBuildFeatureDescriptor sauceBuildFeature = getSauceBuildFeature(build);
+        if (sauceBuildFeature == null) {
+            return false;
+        }
+        if (sauceBuildFeature.getParameters().containsKey(Constants.DISABLE_RESULTS_KEY)
+                && sauceBuildFeature.getParameters().get(Constants.DISABLE_RESULTS_KEY).equals("true")) {
+            return false;
+        }
+
+        return super.isAvailableFor(build); //should return true
     }
 
     /**

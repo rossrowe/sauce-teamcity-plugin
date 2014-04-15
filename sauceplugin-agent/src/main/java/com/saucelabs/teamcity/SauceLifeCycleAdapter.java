@@ -2,6 +2,7 @@ package com.saucelabs.teamcity;
 
 import com.saucelabs.ci.Browser;
 import com.saucelabs.ci.BrowserFactory;
+import com.saucelabs.ci.sauceconnect.SauceConnectFourManager;
 import com.saucelabs.ci.sauceconnect.SauceConnectTwoManager;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.util.EventDispatcher;
@@ -20,6 +21,7 @@ import java.util.Collection;
 public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
 
     private static final Logger logger = Logger.getLogger(SauceLifeCycleAdapter.class);
+    private final SauceConnectFourManager sauceFourTunnelManager;
 
     private AgentRunningBuild myBuild;
     private BrowserFactory sauceBrowserFactory;
@@ -28,9 +30,11 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
     public SauceLifeCycleAdapter(
             @NotNull EventDispatcher<AgentLifeCycleListener> agentDispatcher,
             BrowserFactory sauceBrowserFactory,
-            SauceConnectTwoManager sauceTunnelManager) {
+            SauceConnectTwoManager sauceTunnelManager,
+            SauceConnectFourManager sauceFourTunnelManager) {
         agentDispatcher.addListener(this);
         this.sauceBrowserFactory = sauceBrowserFactory;
+        this.sauceFourTunnelManager = sauceFourTunnelManager;
         this.sauceTunnelManager = sauceTunnelManager;
     }
 
@@ -42,8 +46,19 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         if (features.isEmpty()) return;
         for (AgentBuildFeature feature : features) {
             logger.info("Closing Sauce Connect");
-            sauceTunnelManager.closeTunnelsForPlan(getUsername(feature), null);
+            if (shouldStartSauceConnect(feature)) {
+                if (shouldStartSauceConnectThree(feature)) {
+                    sauceTunnelManager.closeTunnelsForPlan(getUsername(feature), null);
+                } else {
+                    sauceFourTunnelManager.closeTunnelsForPlan(getUsername(feature), null);
+                }
+            }
         }
+    }
+
+    private boolean shouldStartSauceConnectThree(AgentBuildFeature feature) {
+        String useSauceConnect = feature.getParameters().get(Constants.USE_SAUCE_CONNECT_3);
+        return useSauceConnect != null && useSauceConnect.equals("true");
     }
 
     @Override
@@ -64,14 +79,25 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
     private void startSauceConnect(AgentBuildFeature feature) {
         try {
             logger.info("Starting Sauce Connect");
-            sauceTunnelManager.openConnection(
-                    getUsername(feature),
-                    getAccessKey(feature),
-                    Integer.parseInt(getSeleniumPort(feature)),
-                    null,
-                    feature.getParameters().get(Constants.SAUCE_CONNECT_OPTIONS),
-                    feature.getParameters().get(Constants.SAUCE_HTTPS_PROTOCOL),
-                    null);
+            if (shouldStartSauceConnectThree(feature)) {
+                sauceTunnelManager.openConnection(
+                        getUsername(feature),
+                        getAccessKey(feature),
+                        Integer.parseInt(getSeleniumPort(feature)),
+                        null,
+                        feature.getParameters().get(Constants.SAUCE_CONNECT_OPTIONS),
+                        feature.getParameters().get(Constants.SAUCE_HTTPS_PROTOCOL),
+                        null);
+            } else {
+                sauceFourTunnelManager.openConnection(
+                        getUsername(feature),
+                        getAccessKey(feature),
+                        Integer.parseInt(getSeleniumPort(feature)),
+                        null,
+                        feature.getParameters().get(Constants.SAUCE_CONNECT_OPTIONS),
+                        feature.getParameters().get(Constants.SAUCE_HTTPS_PROTOCOL),
+                        null);
+            }
         } catch (IOException e) {
             logger.error("Error launching Sauce Connect", e);
             //TODO log error to build log

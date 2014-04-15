@@ -5,6 +5,7 @@
 <beans default-autowire="constructor">
     <bean id="browserFactory" class="com.saucelabs.ci.BrowserFactory" dependency-check="default" autowire="default" lazy-init="true"/>
     <bean id="sauceTunnelManager" class="com.saucelabs.ci.sauceconnect.SauceConnectTwoManager" dependency-check="default" autowire="default" lazy-init="true"/>
+    <bean id="sauceFourTunnelManager" class="com.saucelabs.ci.sauceconnect.SauceConnectFourManager" dependency-check="default" autowire="default" lazy-init="true"/>
     <bean id="sauceLifeCycleAdapter" class="com.saucelabs.teamcity.SauceLifeCycleAdapter" lazy-init="default" autowire="default"
               dependency-check="default"/>
 </beans>
