@@ -154,7 +154,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         } else {
             JSONArray browsersJSON = new JSONArray();
             for (String browser : selectedBrowsers) {
-                Browser browserInstance = BrowserFactory.getInstance().webDriverBrowserForKey(browser);
+                Browser browserInstance = sauceBrowserFactory.webDriverBrowserForKey(browser);
                 if (browserInstance != null) {
                     browserAsJSON(userName, apiKey, browsersJSON, browserInstance);
                 }
@@ -243,6 +243,11 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
     }
 
     private String[] getSelectedBrowsers(AgentBuildFeature feature) {
-        return feature.getParameters().get(Constants.SELENIUM_WEB_DRIVER_BROWSERS).split(",");
+        String[] selectedBrowsers = feature.getParameters().get(Constants.SELENIUM_SELECTED_BROWSER).split(",");
+        if (selectedBrowsers == null || selectedBrowsers.length == 0) {
+            return feature.getParameters().get(Constants.SELENIUM_WEB_DRIVER_BROWSERS).split(",");
+        } else {
+            return selectedBrowsers;
+        }
     }
 }
