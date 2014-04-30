@@ -23,6 +23,13 @@
     </td>
 </tr>
 
+<tr id="saucePlugin.sauceConnect.container">
+    <th><label for="saucePlugin.sauceConnectOptions">Sauce Connect Command Line Options:</label></th>
+    <td>
+        <props:textProperty name="saucePlugin.sauceConnectOptions"/>
+    </td>
+</tr>
+
 <tr id="saucePlugin.userId.container">
     <th><label for="saucePlugin.userId">Sauce User test:</label></th>
     <td>
