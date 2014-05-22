@@ -26,6 +26,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
     private AgentRunningBuild myBuild;
     private BrowserFactory sauceBrowserFactory;
     private SauceConnectTwoManager sauceTunnelManager;
+    private Process sauceConnectProcess;
 
     public SauceLifeCycleAdapter(
             @NotNull EventDispatcher<AgentLifeCycleListener> agentDispatcher,
@@ -48,9 +49,9 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
             logger.info("Closing Sauce Connect");
             if (shouldStartSauceConnect(feature)) {
                 if (shouldStartSauceConnectThree(feature)) {
-                    sauceTunnelManager.closeTunnelsForPlan(getUsername(feature), null);
+                    sauceTunnelManager.closeTunnelsForPlan(getUsername(feature), feature.getParameters().get(Constants.SAUCE_CONNECT_OPTIONS), null);
                 } else {
-                    sauceFourTunnelManager.closeTunnelsForPlan(getUsername(feature), null);
+                    sauceFourTunnelManager.closeTunnelsForPlan(getUsername(feature), feature.getParameters().get(Constants.SAUCE_CONNECT_OPTIONS), null);
                 }
             }
         }
@@ -80,7 +81,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         try {
             logger.info("Starting Sauce Connect");
             if (shouldStartSauceConnectThree(feature)) {
-                sauceTunnelManager.openConnection(
+                sauceConnectProcess = sauceTunnelManager.openConnection(
                         getUsername(feature),
                         getAccessKey(feature),
                         Integer.parseInt(getSeleniumPort(feature)),
@@ -89,7 +90,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
                         feature.getParameters().get(Constants.SAUCE_HTTPS_PROTOCOL),
                         null);
             } else {
-                sauceFourTunnelManager.openConnection(
+                sauceConnectProcess = sauceFourTunnelManager.openConnection(
                         getUsername(feature),
                         getAccessKey(feature),
                         Integer.parseInt(getSeleniumPort(feature)),
@@ -243,11 +244,18 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
     }
 
     private String[] getSelectedBrowsers(AgentBuildFeature feature) {
-        String[] selectedBrowsers = feature.getParameters().get(Constants.SELENIUM_SELECTED_BROWSER).split(",");
-        if (selectedBrowsers == null || selectedBrowsers.length == 0) {
-            return feature.getParameters().get(Constants.SELENIUM_WEB_DRIVER_BROWSERS).split(",");
+        String selectedBrowser = feature.getParameters().get(Constants.SELENIUM_SELECTED_BROWSER);
+        if (selectedBrowser != null) {
+            String[] selectedBrowsers = selectedBrowser.split(",");
+            if (selectedBrowsers.length != 0) {
+                return selectedBrowsers;
+            }
+        }
+        selectedBrowser = feature.getParameters().get(Constants.SELENIUM_SELECTED_BROWSER);
+        if (selectedBrowser != null) {
+            return selectedBrowser.split(",");
         } else {
-            return selectedBrowsers;
+            return new String[]{};
         }
     }
 }
