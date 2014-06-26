@@ -16,18 +16,27 @@ import java.io.IOException;
 import java.util.Collection;
 
 /**
+ * Handles populating the environment variables and starting and stopping Sauce Connect when a TeamCity build is started/stopped.
  * @author Ross Rowe
  */
 public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
 
+    /** Logger instance. */
     private static final Logger logger = Logger.getLogger(SauceLifeCycleAdapter.class);
+    /** Singleton Sauce Connect v4 manager instance, populated by Spring. */
     private final SauceConnectFourManager sauceFourTunnelManager;
-
-    private AgentRunningBuild myBuild;
+    /** Singleton instance used to retrieve browser information supported by Sauce, populated by Spring. */
     private BrowserFactory sauceBrowserFactory;
+    /** Singleton Sauce Connect v3 manager instance, populated by Spring. */
     private SauceConnectTwoManager sauceTunnelManager;
-    private Process sauceConnectProcess;
 
+    /**
+     *
+     * @param agentDispatcher
+     * @param sauceBrowserFactory Singleton instance used to retrieve browser information supported by Sauce, populated by Spring.
+     * @param sauceTunnelManager Singleton Sauce Connect v3 manager instance, populated by Spring.
+     * @param sauceFourTunnelManager Singleton Sauce Connect v4 manager instance, populated by Spring.
+     */
     public SauceLifeCycleAdapter(
             @NotNull EventDispatcher<AgentLifeCycleListener> agentDispatcher,
             BrowserFactory sauceBrowserFactory,
@@ -39,11 +48,16 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         this.sauceTunnelManager = sauceTunnelManager;
     }
 
+    /**
+     * If Sauce Connect is enabled, then close the Sauce Connect process.
+     * @param build the current build
+     * @param buildStatus state of the build
+     */
     @Override
     public void beforeBuildFinish(@NotNull AgentRunningBuild build, @NotNull BuildFinishedStatus buildStatus) {
         super.beforeBuildFinish(build, buildStatus);
 
-        Collection<AgentBuildFeature> features = getBuild().getBuildFeaturesOfType("sauce");
+        Collection<AgentBuildFeature> features = build.getBuildFeaturesOfType("sauce");
         if (features.isEmpty()) return;
         for (AgentBuildFeature feature : features) {
             logger.info("Closing Sauce Connect");
@@ -57,17 +71,25 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         }
     }
 
+    /**
+     *
+     * @param feature contains the Sauce information set by the user within the build configuration
+     * @return boolean indicating whether Sauce Connect v3 should be started
+     */
     private boolean shouldStartSauceConnectThree(AgentBuildFeature feature) {
         String useSauceConnect = feature.getParameters().get(Constants.USE_SAUCE_CONNECT_3);
         return useSauceConnect != null && useSauceConnect.equals("true");
     }
 
+    /**
+     * If the build has the Sauce build feature enabled, populates the environment variables and starts Sauce Connect.
+     * @param runningBuild the current running build
+     */
     @Override
     public void buildStarted(@NotNull AgentRunningBuild runningBuild) {
         super.buildStarted(runningBuild);
         logger.info("Build Started, setting Sauce environment variables");
-        this.myBuild = runningBuild;
-        Collection<AgentBuildFeature> features = getBuild().getBuildFeaturesOfType("sauce");
+        Collection<AgentBuildFeature> features = runningBuild.getBuildFeaturesOfType("sauce");
         if (features.isEmpty()) return;
         for (AgentBuildFeature feature : features) {
             populateEnvironmentVariables(runningBuild, feature);
@@ -77,11 +99,16 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         }
     }
 
+    /**
+     * Starts Sauce Connect.
+     *
+     * @param feature contains the Sauce information set by the user within the build configuration
+     */
     private void startSauceConnect(AgentBuildFeature feature) {
         try {
             logger.info("Starting Sauce Connect");
             if (shouldStartSauceConnectThree(feature)) {
-                sauceConnectProcess = sauceTunnelManager.openConnection(
+                sauceTunnelManager.openConnection(
                         getUsername(feature),
                         getAccessKey(feature),
                         Integer.parseInt(getSeleniumPort(feature)),
@@ -91,7 +118,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
                         null,
                         Boolean.TRUE);
             } else {
-                sauceConnectProcess = sauceFourTunnelManager.openConnection(
+                sauceFourTunnelManager.openConnection(
                         getUsername(feature),
                         getAccessKey(feature),
                         Integer.parseInt(getSeleniumPort(feature)),
@@ -107,6 +134,11 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         }
     }
 
+    /**
+     *
+     * @param feature contains the Sauce information set by the user within the build configuration
+     * @return
+     */
     private String getSeleniumHost(AgentBuildFeature feature) {
         String host = feature.getParameters().get(Constants.SELENIUM_HOST_KEY);
         if (host == null || host.equals("")) {
@@ -119,6 +151,11 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         return host;
     }
 
+    /**
+     *
+     * @param feature contains the Sauce information set by the user within the build configuration
+     * @return
+     */
     private String getSeleniumPort(AgentBuildFeature feature) {
         String port = feature.getParameters().get(Constants.SELENIUM_PORT_KEY);
         if (port == null || port.equals("")) {
@@ -133,11 +170,21 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
 
     }
 
+    /**
+     *
+     * @param feature contains the Sauce information set by the user within the build configuration
+     * @return
+     */
     private boolean shouldStartSauceConnect(AgentBuildFeature feature) {
         String useSauceConnect = feature.getParameters().get(Constants.SAUCE_CONNECT_KEY);
         return useSauceConnect != null && useSauceConnect.equals("true");
     }
 
+    /**
+     *
+     * @param runningBuild
+     * @param feature contains the Sauce information set by the user within the build configuration
+     */
     private void populateEnvironmentVariables(AgentRunningBuild runningBuild, AgentBuildFeature feature) {
 
         logger.info("Populating environment variables");
@@ -178,6 +225,13 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
 
     }
 
+    /**
+     *
+     * @param userName
+     * @param apiKey
+     * @param browsersJSON
+     * @param browserInstance
+     */
     private void browserAsJSON(String userName, String apiKey, JSONArray browsersJSON, Browser browserInstance) {
         if (browserInstance == null) {
             return;
@@ -210,10 +264,6 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         return feature.getParameters().get(Constants.SAUCE_USER_ID_KEY);
     }
 
-    private AgentRunningBuild getBuild() {
-        return myBuild;
-    }
-
 
     /**
      * Generates a String that represents the Sauce OnDemand driver URL. This is used by the
@@ -227,24 +277,22 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         StringBuilder sb = new StringBuilder("sauce-ondemand:?username=");
         sb.append(username);
         sb.append("&access-key=").append(apiKey);
-
-
         if (browser != null) {
             sb.append("&os=").append(browser.getOs());
             sb.append("&browser=").append(browser.getBrowserName());
             sb.append("&browser-version=").append(browser.getVersion());
-
         }
-
-
-//        sb.append("&firefox-profile-url=").append(StringUtils.defaultString(feature.getFirefoxProfileUrl()));
         sb.append("&max-duration=").append(feature.getParameters().get(Constants.SELENIUM_MAX_DURATION_KEY));
         sb.append("&idle-timeout=").append(feature.getParameters().get(Constants.SELENIUM_IDLE_TIMEOUT_KEY));
-//        sb.append("&user-extensions-url=").append(StringUtils.defaultString(feature.getUserExtensionsJson()));
 
         return sb.toString();
     }
 
+    /**
+     *
+     * @param feature contains the Sauce information set by the user within the build configuration
+     * @return
+     */
     private String[] getSelectedBrowsers(AgentBuildFeature feature) {
         String selectedBrowser = feature.getParameters().get(Constants.SELENIUM_SELECTED_BROWSER);
         if (selectedBrowser != null) {
