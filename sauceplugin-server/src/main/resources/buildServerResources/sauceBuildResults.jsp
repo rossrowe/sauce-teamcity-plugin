@@ -32,7 +32,16 @@
     <c:when test="${param.jobId != null}">
         <div id="sauce-job" class="groupBox">
             <h2>Details for ${param.jobId}</h2>
-            <script type="text/javascript" src="https://saucelabs.com/job-embed/${param.jobId}.js?auth=${param.hmac}"/>
+            <script type="text/javascript"
+                    src="https://saucelabs.com/job-embed/${param.jobId}.js?auth=${param.hmac}"></script>
+
+        </div>
+        <div>
+            <script type="text/javascript">
+                var iframe = document.getElementById('sauce-job').children[1];
+                iframe.style.width = "1024px";
+                iframe.style.height = "1000px";
+            </script>
         </div>
     </c:when>
     <c:otherwise>
@@ -40,4 +49,3 @@
 
     </c:otherwise>
 </c:choose>
-<div id="sauce-job-results" class="groupBox"></div>
