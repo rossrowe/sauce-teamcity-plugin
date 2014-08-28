@@ -9,16 +9,10 @@
     <artifactId>sauceplugin-common</artifactId>
     <packaging>jar</packaging>
     <dependencies>
-
-        <dependency>
-            <groupId>com.saucelabs</groupId>
-            <artifactId>saucerest</artifactId>
-            <version>1.0.13</version>
-        </dependency>
         <dependency>
             <groupId>com.saucelabs</groupId>
             <artifactId>ci-sauce</artifactId>
-            <version>1.68</version>
+            <version>1.74</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>

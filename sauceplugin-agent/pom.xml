@@ -31,11 +31,7 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.saucelabs</groupId>
-            <artifactId>saucerest</artifactId>
-            <version>1.0.7</version>
-        </dependency>
+
         <dependency>
             <artifactId>sauce-connect</artifactId>
             <groupId>com.saucelabs</groupId>
@@ -44,7 +40,7 @@
         <dependency>
             <groupId>com.saucelabs</groupId>
             <artifactId>ci-sauce</artifactId>
-            <version>1.68</version>
+            <version>1.74</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
