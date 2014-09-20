@@ -12,16 +12,16 @@
             <th>Name</th>
             <th>Status</th>
         </tr>
-        <c:forEach var="jobInfo" items="${jobs}">
+        <c:forEach var="jobIter" items="${jobs}">
             <tr>
                 <td>
-                    <a href="<%=request.getAttribute("javax.servlet.forward.request_uri")%>?<%=request.getAttribute("javax.servlet.forward.query_string")%>&jobId=${jobInfo.jobId}&hmac=${jobInfo.hmac}">${jobInfo.jobId}</a>
+                    <a href="<%=request.getAttribute("javax.servlet.forward.request_uri")%>?buildId=<%=request.getParameter("buildId")%>&buildTypeId=<%=request.getParameter("buildTypeId")%>&tab=<%=request.getParameter("tab")%>&jobId=${jobIter.jobId}&hmac=${jobIter.hmac}">${jobIter.jobId}</a>
                 </td>
                 <td>
-                        ${jobInfo.name}
+                        ${jobIter.name}
                 </td>
                 <td>
-                        ${jobInfo.status}
+                        ${jobIter.status}
                 </td>
             </tr>
         </c:forEach>
