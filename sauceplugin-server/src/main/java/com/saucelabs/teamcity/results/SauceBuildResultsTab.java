@@ -37,7 +37,7 @@ public class SauceBuildResultsTab extends BuildTab {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd-HH";
 
-    public static final String JOB_DETAILS_URL = "http://saucelabs.com/rest/v1/%1$s/build/%2$s/jobs?full=true";
+    public static final String JOB_DETAILS_URL = "http://saucelabs.com/rest/v1/%1$s/build/%2$s/jobs?full=true&limit=200";
 
     private static final String HMAC_KEY = "HMACMD5";
 
