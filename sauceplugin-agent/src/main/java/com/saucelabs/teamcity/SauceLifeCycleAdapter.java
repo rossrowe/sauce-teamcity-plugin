@@ -200,6 +200,8 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
                 addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_VERSION_ENV, browser.getVersion());
                 addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_PLATFORM_ENV, browser.getOs());
                 addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_DRIVER_ENV, sodDriverURI);
+                addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_ORIENTATION, browser.getDeviceOrientation());
+                addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_DEVICE, browser.getLongName());
             }
         } else {
             JSONArray browsersJSON = new JSONArray();
