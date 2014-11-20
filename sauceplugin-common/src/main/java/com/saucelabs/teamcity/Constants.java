@@ -36,6 +36,8 @@ public class Constants {
     public static final String SAUCE_USERNAME = "SAUCE_USERNAME";
     public static final String SAUCE_ACCESS_KEY = "SAUCE_ACCESS_KEY";
     public static final String USE_SAUCE_CONNECT_3 = "saucePlugin.sauceConnectv3";
+    public static final String SELENIUM_DEVICE = "SELENIUM_DEVICE";
+    public static final String SELENIUM_ORIENTATION = "SELENIUM_ORIENTATION";
 
 
     private Constants() {
