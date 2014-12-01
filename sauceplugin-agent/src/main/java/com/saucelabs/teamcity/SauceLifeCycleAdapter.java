@@ -201,14 +201,17 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
             Loggers.AGENT.info("Selected browsers: " + Arrays.toString(selectedBrowsers));
             if (selectedBrowsers.length == 1) {
                 Browser browser = sauceBrowserFactory.webDriverBrowserForKey(selectedBrowsers[0]);
-                if (browser != null) {
+                if (browser == null) {
+                    Loggers.AGENT.info("No browser found for: " + selectedBrowsers[0]);
+                } else {
                     String sodDriverURI = getSodDriverUri(userName, apiKey, browser, feature);
                     addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_BROWSER_ENV, browser.getBrowserName());
                     addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_VERSION_ENV, browser.getVersion());
                     addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_PLATFORM_ENV, browser.getOs());
                     addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_DRIVER_ENV, sodDriverURI);
                     addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_ORIENTATION, browser.getDeviceOrientation());
-                    addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_DEVICE, browser.getLongName());
+                    addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_DEVICE, browser.getDevice());
+                    addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_DEVICE_TYPE, browser.getDeviceType());
                 }
             } else {
                 JSONArray browsersJSON = new JSONArray();
@@ -248,10 +251,21 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         JSONObject config = new JSONObject();
         try {
             config.put("os", browserInstance.getOs());
-            config.put("platform", browserInstance.getPlatform().toString());
             config.put("browser", browserInstance.getBrowserName());
             config.put("browser-version", browserInstance.getVersion());
+            config.put("long-name", browserInstance.getLongName());
+            config.put("long-version", browserInstance.getLongVersion());
             config.put("url", browserInstance.getUri(userName, apiKey));
+            if (browserInstance.getDevice() != null) {
+                config.put("device", browserInstance.getDevice());
+            }
+            if (browserInstance.getDeviceType() != null) {
+                config.put("device-type", browserInstance.getDeviceType());
+            }
+            if (browserInstance.getDeviceOrientation() != null) {
+                config.put("device-orientation", browserInstance.getDeviceOrientation());
+            }
+
         } catch (JSONException e) {
             Loggers.AGENT.error("Unable to create JSON Object", e);
         }
