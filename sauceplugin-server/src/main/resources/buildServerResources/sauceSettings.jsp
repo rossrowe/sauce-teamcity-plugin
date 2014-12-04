@@ -104,3 +104,31 @@
     </td>
 </tr>
 
+<tr id="saucePlugin.proxyHost.container">
+    <th><label for="saucePlugin.proxyHost">Proxy Host (optional):</label></th>
+        <td>
+            <props:textProperty name="saucePlugin.proxyHost"/>
+        </td>
+</tr>
+
+<tr id="saucePlugin.proxyPort.container">
+    <th><label for="saucePlugin.proxyPort">Proxy Port (optional):</label></th>
+        <td>
+            <props:textProperty name="saucePlugin.proxyPort"/>
+        </td>
+</tr>
+
+<tr id="saucePlugin.proxyUser.container">
+    <th><label for="saucePlugin.proxyUser">Proxy User (optional):</label></th>
+        <td>
+            <props:textProperty name="saucePlugin.proxyUser"/>
+        </td>
+</tr>
+
+<tr id="saucePlugin.proxyPassword.container">
+    <th><label for="saucePlugin.proxyPassword">Proxy Password (optional):</label></th>
+        <td>
+            <props:textProperty name="saucePlugin.proxyPassword"/>
+        </td>
+</tr>
+
