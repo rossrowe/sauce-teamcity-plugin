@@ -69,10 +69,11 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         for (AgentBuildFeature feature : features) {
             Loggers.AGENT.info("Closing Sauce Connect");
             if (shouldStartSauceConnect(feature)) {
+                String options = getSauceConnectOptions(build, feature);
                 if (shouldStartSauceConnectThree(feature)) {
-                    sauceTunnelManager.closeTunnelsForPlan(getUsername(feature), feature.getParameters().get(Constants.SAUCE_CONNECT_OPTIONS), null);
+                    sauceTunnelManager.closeTunnelsForPlan(getUsername(feature), options, null);
                 } else {
-                    sauceFourTunnelManager.closeTunnelsForPlan(getUsername(feature), feature.getParameters().get(Constants.SAUCE_CONNECT_OPTIONS), null);
+                    sauceFourTunnelManager.closeTunnelsForPlan(getUsername(feature), options, null);
                 }
             }
         }
@@ -101,7 +102,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         for (AgentBuildFeature feature : features) {
             populateEnvironmentVariables(runningBuild, feature);
             if (shouldStartSauceConnect(feature)) {
-                startSauceConnect(feature);
+                startSauceConnect(runningBuild, feature);
             }
         }
     }
@@ -109,18 +110,20 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
     /**
      * Starts Sauce Connect.
      *
+     * @param runningBuild
      * @param feature contains the Sauce information set by the user within the build configuration
      */
-    private void startSauceConnect(AgentBuildFeature feature) {
+    private void startSauceConnect(AgentRunningBuild runningBuild, AgentBuildFeature feature) {
         try {
             Loggers.AGENT.info("Starting Sauce Connect");
+            String options = getSauceConnectOptions(runningBuild, feature);
             if (shouldStartSauceConnectThree(feature)) {
                 sauceTunnelManager.openConnection(
                         getUsername(feature),
                         getAccessKey(feature),
                         Integer.parseInt(getSeleniumPort(feature)),
                         null,
-                        feature.getParameters().get(Constants.SAUCE_CONNECT_OPTIONS),
+                        options,
                         feature.getParameters().get(Constants.SAUCE_HTTPS_PROTOCOL),
                         null,
                         Boolean.TRUE);
@@ -130,7 +133,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
                         getAccessKey(feature),
                         Integer.parseInt(getSeleniumPort(feature)),
                         null,
-                        feature.getParameters().get(Constants.SAUCE_CONNECT_OPTIONS),
+                        options,
                         feature.getParameters().get(Constants.SAUCE_HTTPS_PROTOCOL),
                         null,
                         Boolean.TRUE);
@@ -139,6 +142,16 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
             Loggers.AGENT.error("Error launching Sauce Connect", e);
             //TODO log error to build log
         }
+    }
+
+    private String getSauceConnectOptions(AgentRunningBuild runningBuild, AgentBuildFeature feature) {
+        String options = feature.getParameters().get(Constants.SAUCE_CONNECT_OPTIONS);
+        if (options == null || options.equals(""))
+        {
+            //default tunnel identifier to teamcity-%teamcity.agent.name%
+            options = "-i teamcity-" + runningBuild.getSharedConfigParameters().get("teamcity.agent.name");
+        }
+        return options;
     }
 
     /**
