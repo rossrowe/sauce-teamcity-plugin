@@ -49,7 +49,7 @@
         <dependency>
             <groupId>com.saucelabs</groupId>
             <artifactId>ci-sauce</artifactId>
-            <version>1.84</version>
+            <version>1.87</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
