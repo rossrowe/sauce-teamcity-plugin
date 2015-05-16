@@ -126,7 +126,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
                         options,
                         feature.getParameters().get(Constants.SAUCE_HTTPS_PROTOCOL),
                         null,
-                        Boolean.TRUE);
+                        Boolean.TRUE, null);
             } else {
                 sauceFourTunnelManager.openConnection(
                         getUsername(feature),
@@ -136,7 +136,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
                         options,
                         feature.getParameters().get(Constants.SAUCE_HTTPS_PROTOCOL),
                         null,
-                        Boolean.TRUE);
+                        Boolean.TRUE, null);
             }
         } catch (IOException e) {
             Loggers.AGENT.error("Error launching Sauce Connect", e);
