@@ -13,7 +13,6 @@ Installation
 
 [Download](https://repository-saucelabs.forge.cloudbees.com/release/com/saucelabs/teamcity/sauceplugin/1.32/sauceplugin-1.32.zip) the plugin zip file and copy it into your ~/.BuildServer/plugins directory
 
-
 Usage
 ===
 
