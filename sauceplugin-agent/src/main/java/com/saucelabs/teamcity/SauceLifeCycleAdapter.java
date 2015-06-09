@@ -111,7 +111,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
      * Starts Sauce Connect.
      *
      * @param runningBuild
-     * @param feature contains the Sauce information set by the user within the build configuration
+     * @param feature      contains the Sauce information set by the user within the build configuration
      */
     private void startSauceConnect(AgentRunningBuild runningBuild, AgentBuildFeature feature) {
         try {
@@ -146,8 +146,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
 
     private String getSauceConnectOptions(AgentRunningBuild runningBuild, AgentBuildFeature feature) {
         String options = feature.getParameters().get(Constants.SAUCE_CONNECT_OPTIONS);
-        if (options == null || options.equals(""))
-        {
+        if (options == null || options.equals("")) {
             //default tunnel identifier to teamcity-%teamcity.agent.name%
             options = "-i teamcity-" + runningBuild.getSharedConfigParameters().get("teamcity.agent.name");
         }
@@ -233,16 +232,17 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
                     addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_DEVICE, browser.getDevice());
                     addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_DEVICE_TYPE, browser.getDeviceType());
                 }
-            } else {
-                JSONArray browsersJSON = new JSONArray();
-                for (String browser : selectedBrowsers) {
-                    Browser browserInstance = sauceBrowserFactory.webDriverBrowserForKey(browser);
-                    if (browserInstance != null) {
-                        browserAsJSON(userName, apiKey, browsersJSON, browserInstance);
-                    }
-                }
-                addSharedEnvironmentVariable(runningBuild, Constants.SAUCE_BROWSERS_ENV, browsersJSON.toString());
             }
+
+            JSONArray browsersJSON = new JSONArray();
+            for (String browser : selectedBrowsers) {
+                Browser browserInstance = sauceBrowserFactory.webDriverBrowserForKey(browser);
+                if (browserInstance != null) {
+                    browserAsJSON(userName, apiKey, browsersJSON, browserInstance);
+                }
+            }
+            addSharedEnvironmentVariable(runningBuild, Constants.SAUCE_BROWSERS_ENV, browsersJSON.toString());
+
         }
         addSharedEnvironmentVariable(runningBuild, Constants.SAUCE_USER_NAME, userName);
         addSharedEnvironmentVariable(runningBuild, Constants.SAUCE_API_KEY, apiKey);
@@ -255,6 +255,7 @@ public class SauceLifeCycleAdapter extends AgentLifeCycleAdapter {
         addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_STARTING_URL_ENV, feature.getParameters().get(Constants.SELENIUM_STARTING_URL_KEY));
         addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_MAX_DURATION_ENV, feature.getParameters().get(Constants.SELENIUM_MAX_DURATION_KEY));
         addSharedEnvironmentVariable(runningBuild, Constants.SELENIUM_IDLE_TIMEOUT_ENV, feature.getParameters().get(Constants.SELENIUM_IDLE_TIMEOUT_KEY));
+        addSharedEnvironmentVariable(runningBuild, Constants.BUILD_NUMBER_ENV, runningBuild.getBuildTypeExternalId() + runningBuild.getBuildNumber());
 
     }
 

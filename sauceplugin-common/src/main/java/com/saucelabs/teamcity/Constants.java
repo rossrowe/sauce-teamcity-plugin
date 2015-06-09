@@ -14,7 +14,7 @@ public class Constants {
     public static final String SAUCE_ONDEMAND_HOST = "SAUCE_HOST";
     public static final String SELENIUM_STARTING_URL_ENV = "SELENIUM_STARTING_URL";
     public static final String SAUCE_CUSTOM_DATA_ENV = "SAUCE_BAMBOO_BUILDNUMBER";
-    public static final String BAMBOO_BUILD_NUMBER_ENV = "BAMBOO_BUILDNUMBER";
+    public static final String BUILD_NUMBER_ENV = "SAUCE_TC_BUILDNUMBER";
     public static final String SAUCE_USER_NAME = "SAUCE_USER_NAME";
     public static final String SAUCE_API_KEY = "SAUCE_API_KEY";
     public static final String SAUCE_BROWSERS_ENV = "SAUCE_ONDEMAND_BROWSERS";
