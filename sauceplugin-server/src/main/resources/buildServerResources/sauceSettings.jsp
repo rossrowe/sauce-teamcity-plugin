@@ -87,15 +87,6 @@
     </td>
 </tr>
 
-
-<tr id="saucePlugin.sauceConnectv3.container">
-    <th><label for="saucePlugin.sauceConnectv3">Use Sauce Connect v3:</label></th>
-    <td>
-        <props:checkboxProperty name="saucePlugin.sauceConnectv3" treatFalseValuesCorrectly="${true}"
-                                uncheckedValue="false"/>
-    </td>
-</tr>
-
 <tr id="saucePlugin.embedResults.container">
     <th><label for="saucePlugin.disableResults">Disable Embedded Sauce Results:</label></th>
     <td>
